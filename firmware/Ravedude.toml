@@ -1,0 +1,16 @@
+[general]
+port = "/dev/cu.usbmodem101"
+open-console = false
+
+[board]
+name = "ATTiny85 programed via Arduino UNO running ArduinoISP"
+
+[board.reset]
+# The board automatically resets when attempting to flash
+automatic = true
+
+[board.avrdude]
+programmer = "arduino_as_isp"
+partno = "attiny85"
+baudrate = 19200
+do-chip-erase = true
