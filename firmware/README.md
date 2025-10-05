@@ -21,6 +21,8 @@ I used the Arduino UNO with the [Arduino as ISP](https://docs.arduino.cc/learn/c
 - https://highlowtech.org/?p=1706
 - https://www.arduinoslovakia.eu/page/stmievac-led-pasika-pomocou-attiny85
 - https://www.arduinoslovakia.eu/page/nelinearna-citlivost-ludskeho-oka
+- https://www.mauroalfieri.it/elettronica/rotary-encoder-attiny85-neopixel.html
+- https://thewanderingengineer.com/2014/08/11/rotary-encoder-on-the-attiny85-part-2/
 
 ## License
 
