@@ -1,0 +1,8 @@
+# Temporary files
+*-backups
+~*.lck
+# Local project settings
+*.kicad_prl
+
+# Fabrication toolkit plugin directory of exports
+production
