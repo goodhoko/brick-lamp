@@ -1,9 +1,10 @@
 # Temporary files
 *-backups
 ~*.lck
+_autosave*
+fp-info-cache
 # Local project settings
 *.kicad_prl
-_autosave*
 
 # Fabrication toolkit plugin directory of exports
 production
