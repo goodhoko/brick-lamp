@@ -3,6 +3,7 @@
 ~*.lck
 # Local project settings
 *.kicad_prl
+_autosave*
 
 # Fabrication toolkit plugin directory of exports
 production
