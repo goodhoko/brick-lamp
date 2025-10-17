@@ -4,6 +4,11 @@
 	(generator_version "9.0")
 	(uuid "fbacff04-6824-44bf-90ce-3e736acc13bc")
 	(paper "A5")
+	(title_block
+		(title "ATTiny85 24V LED Dimmer")
+		(date "2025-10-17")
+		(rev "1")
+	)
 	(lib_symbols
 		(symbol "Connector:Conn_01x04_Pin"
 			(pin_names
