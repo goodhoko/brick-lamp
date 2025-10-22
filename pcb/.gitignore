@@ -3,6 +3,7 @@
 ~*.lck
 _autosave*
 fp-info-cache
+\#auto_saved_files\#
 # Local project settings
 *.kicad_prl
 
