@@ -41,7 +41,8 @@ fn main() -> ! {
 
     loop {
         let input = potentiometer.measure();
-        pwm.set_duty(input);
+        let duty = correct_gamma(input);
+        pwm.set_duty(duty);
         delay.delay_ms(10);
     }
 }
@@ -89,4 +90,12 @@ where
         // Convert by simply flooring to u8;
         (avg >> 2) as u8
     }
+}
+
+/// Integer-only gamma correction with gamma = 2.0
+pub fn correct_gamma(input: u8) -> u8 {
+    let input = input as u16;
+    let max = u8::MAX as u16;
+
+    ((input * input) / max).clamp(0, max) as u8
 }
