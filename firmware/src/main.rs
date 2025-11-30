@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 
+use avr_device::interrupt;
 use embedded_hal::delay::DelayNs;
 use panic_halt as _;
 
@@ -26,8 +27,20 @@ fn main() -> ! {
 
     let pwm_timer = Timer0Pwm::new(dp.TC0, Prescaler::Direct);
     let mut pwm = pins.pb0.into_output().into_pwm(&pwm_timer);
-    pwm.set_duty(0);
-    pwm.enable();
+    pwm.set_duty(invert(0));
+
+    // Change the Compare Output Mode register to the compare_match *invrerted* mode to work around
+    // a limitation of the "simple PWM" where it can't reach a pure, constant low-level even when
+    // the duty is set to 0. By inverting the output we can reach constant low-level at duty 255.
+    // In exchange, we can't reach a constant high-level but that's OK as we don't want to drive
+    // the LEDs at 100% duty anyway. This functionally replaces a call to pwm.enable().
+    {
+        // SAFETY: AFAIK this register is not accessed from interrupt handlers.
+        interrupt::free(|_| {
+            let register = unsafe { &*avr_device::attiny85::TC0::ptr() };
+            register.tccr0a.modify(|_, w| w.com0a().bits(3));
+        })
+    }
 
     let mut potentiometer = Potentiometer::new(pins.pb3, dp.ADC);
 
@@ -36,15 +49,21 @@ fn main() -> ! {
     loop {
         let input = potentiometer.measure();
         let duty = correct_gamma(input);
-        pwm.set_duty(duty);
+        let inverted = invert(duty);
+        pwm.set_duty(inverted);
         delay.delay_ms(10);
     }
 }
 
+// TODO: use precomputed table and gamma of 2.2
 /// Integer-only gamma correction with gamma = 2.0
 pub fn correct_gamma(input: u8) -> u8 {
     let input = input as u16;
     let max = u8::MAX as u16;
 
     ((input * input) / max).clamp(0, max) as u8
+}
+
+pub fn invert(value: u8) -> u8 {
+    u8::MAX - value
 }

@@ -19,6 +19,7 @@ attiny-hal = { git = "https://github.com/Rahix/avr-hal/", features = ["attiny85"
 # We need arduino-hal for the `entry` attribute to define our `main` function.
 # The trinket (luckily) uses the attiny85 MCU so it should hopefully work.
 arduino-hal = { git = "https://github.com/Rahix/avr-hal/", features = ["trinket"]}
+avr-device = { version = "0.7", features = ["attiny85"]}
 
 # Configure the build for minimal size - AVRs have very little program memory
 [profile.dev]
