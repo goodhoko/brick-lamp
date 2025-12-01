@@ -25,6 +25,9 @@ fn main() -> ! {
     let dp = hal::Peripherals::take().unwrap();
     let pins = hal::pins!(dp);
 
+    // We use a potentiometer with the wiper connected to the PB3 pin as user input for brightness.
+    let mut potentiometer = Potentiometer::new(pins.pb3, dp.ADC);
+
     let pwm_timer = Timer0Pwm::new(dp.TC0, Prescaler::Direct);
     let mut pwm = pins.pb0.into_output().into_pwm(&pwm_timer);
     pwm.set_duty(invert(0));
@@ -40,8 +43,6 @@ fn main() -> ! {
         const SIMPLE_PWM_INVERTED_MODE: u8 = 3;
         timer_control_register_a.modify(|_, w| w.com0a().bits(SIMPLE_PWM_INVERTED_MODE));
     });
-
-    let mut potentiometer = Potentiometer::new(pins.pb3, dp.ADC);
 
     let mut delay: Delay<CoreClockFrequency> = hal::delay::Delay::new();
 
