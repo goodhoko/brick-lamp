@@ -1,10 +1,6 @@
-use core::array::from_fn;
-
-use embedded_hal::delay::DelayNs;
 use panic_halt as _;
 
 use attiny_hal::{
-    self as hal,
     adc::{AdcChannel, AdcSettings, ClockDivider, ReferenceVoltage},
     pac::ADC,
     port::{
@@ -13,14 +9,8 @@ use attiny_hal::{
     },
     Adc, Attiny,
 };
-use hal::delay::Delay;
 
 use crate::CoreClockFrequency;
-
-/// How many samples to take and average to get a single measurement.
-const SAMPLE_COUNT: usize = 5;
-/// How long we wait in milliseconds between individual samples.
-const SAMPLE_INTERVAL_MS: u32 = 5;
 
 pub struct Potentiometer<P> {
     pin: Pin<Analog, P>,
@@ -50,25 +40,9 @@ where
     }
 
     pub fn measure(&mut self) -> u8 {
-        let avg = self.sample();
-
-        // TODO: offset and multiply
-
+        let value = self.pin.analog_read(&mut self.adc);
         // The ADC has 10 bits of precision but our PWM has only 8bits.
-        // Convert by simply flooring to u8;
-        (avg >> 2) as u8
-    }
-
-    /// Takes SAMPLE_COUNT individual samples and returns their average discarding outliers.
-    fn sample(&mut self) -> u16 {
-        let mut delay: Delay<CoreClockFrequency> = hal::delay::Delay::new();
-        let mut samples: [u16; SAMPLE_COUNT] = from_fn(|_| {
-            delay.delay_ms(SAMPLE_INTERVAL_MS);
-            self.pin.analog_read(&mut self.adc)
-        });
-
-        samples.as_mut_slice().sort_unstable();
-        // Drop the max and min samples and average the rest
-        samples[1..4].iter().sum::<u16>() / 3
+        // Convert by simply dropping the two least significant bits.
+        (value >> 2) as u8
     }
 }
