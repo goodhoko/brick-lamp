@@ -29,18 +29,16 @@ fn main() -> ! {
     let mut pwm = pins.pb0.into_output().into_pwm(&pwm_timer);
     pwm.set_duty(invert(0));
 
-    // Change the Compare Output Mode register to the compare_match *invrerted* mode to work around
-    // a limitation of the "simple PWM" where it can't reach a pure, constant low-level even when
-    // the duty is set to 0. By inverting the output we can reach constant low-level at duty 255.
+    // Change the Compare Output Mode register to the compare_match *inverted* mode to work around
+    // a limitation of the "simple PWM" where it can't reach a pure, constant low-level when the
+    // duty is set to 0. By inverting the output we can reach constant low-level at duty 255.
     // In exchange, we can't reach a constant high-level but that's OK as we don't want to drive
-    // the LEDs at 100% duty anyway. This functionally replaces a call to pwm.enable().
-    {
+    // the LEDs at 100% power anyway. This block functionally replaces a call to pwm.enable().
+    interrupt::free(|_| {
         // SAFETY: AFAIK this register is not accessed from interrupt handlers.
-        interrupt::free(|_| {
-            let register = unsafe { &*avr_device::attiny85::TC0::ptr() };
-            register.tccr0a.modify(|_, w| w.com0a().bits(3));
-        })
-    }
+        let register = unsafe { &*avr_device::attiny85::TC0::ptr() };
+        register.tccr0a.modify(|_, w| w.com0a().bits(3));
+    });
 
     let mut potentiometer = Potentiometer::new(pins.pb3, dp.ADC);
 
