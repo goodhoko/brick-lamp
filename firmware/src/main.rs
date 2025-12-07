@@ -34,8 +34,17 @@ fn main() -> ! {
 
     let mut delay: Delay<CoreClockFrequency> = hal::delay::Delay::new();
 
+    let mut last_input: u8 = 0;
     loop {
         let input = potentiometer.measure();
+
+        if input == last_input || input == last_input.saturating_add(1) {
+            delay.delay_ms(10);
+            continue;
+        }
+
+        last_input = input;
+
         let duty = correct_gamma(input);
         pwm.set_duty(duty);
         delay.delay_ms(10);
