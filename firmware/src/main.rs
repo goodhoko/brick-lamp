@@ -33,8 +33,15 @@ fn main() -> ! {
     let mut pwm = InvertedPwm::new(pwm_timer, pins.pb0);
 
     let mut n: usize = 0;
+    let mut input: u16 = 0;
     loop {
-        let input = potentiometer.measure();
+        let measured = potentiometer.measure();
+        if measured > input.saturating_add(1) {
+            input = measured - 1;
+        } else if measured < input {
+            input = measured;
+        }
+
         let gamma_corrected = correct_gamma(input, potentiometer::MAX_VALUE);
         let power_capped = scale(gamma_corrected, MAX_POWER_PERCENT);
 
