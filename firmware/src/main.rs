@@ -56,6 +56,9 @@ fn main() -> ! {
     }
 }
 
+// TODO: consider using gamma of 2.2 which should better match human perception. That would likely
+// require using a precomputed gamma table. ATTiny85 has 8KB of memory so it should easily fit a
+// table for 10 bits of our input resolution.
 /// Integer-only gamma correction with gamma = 2.0
 pub fn correct_gamma(input: u16, max: u16) -> u16 {
     let input = input as u32;
