@@ -12,6 +12,10 @@ use attiny_hal::{
 
 use crate::CoreClockFrequency;
 
+/// The maximum value this potentiometer can produce. This is dictated by the ADC converter which
+/// in ATTiny85 has 10 bits of resolution and thus 2^10-1 is the maximum value.
+pub const MAX_VALUE: u16 = 0x3ff;
+
 pub struct Potentiometer<P> {
     pin: Pin<Analog, P>,
     adc: Adc<CoreClockFrequency>,
@@ -39,10 +43,7 @@ where
         Self { pin, adc }
     }
 
-    pub fn measure(&mut self) -> u8 {
-        let value = self.pin.analog_read(&mut self.adc);
-        // The ADC has 10 bits of precision but our PWM has only 8bits.
-        // Convert by simply dropping the two least significant bits.
-        (value >> 2) as u8
+    pub fn measure(&mut self) -> u16 {
+        self.pin.analog_read(&mut self.adc)
     }
 }
